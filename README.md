@@ -1,2 +1,2 @@
 # vicidial-docker
-Vicidial Docker install
+1. docker-compose up --build --force-recreate

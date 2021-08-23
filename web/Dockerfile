@@ -17,6 +17,7 @@ RUN perl install.pl --no-prompt --web-only --web-languages --web=/var/www/localh
 # Copy configuration files
 COPY ./conf/httpd.conf /etc/apache2
 COPY ./conf/astguiclient.conf /etc
+COPY ./conf/index.html /var/www/localhost/htdocs
 
 # Init apache2 deamon
 CMD ["-D","FOREGROUND"]

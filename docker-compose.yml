@@ -10,20 +10,8 @@ services:
             - 80:80
         depends_on:
             - mysql
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin:latest
-        container_name: phpmyadmin
-        restart: always
-        links:
-            - mysql
-        depends_on:
-            - mysql
-        environment:
-            - PMA_ARBITRARY=1
-        ports:
-            - 8080:80
     mysql:
-        image: mysql:5.7
+        image: mariadb
         container_name: mysql
         restart: always
         environment:
@@ -32,4 +20,14 @@ services:
             - MYSQL_USER=cron
             - MYSQL_PASSWORD=1234
         ports:
-            - 3306:3306
+            - 3308:3306
+        volumes:
+            - ./mysql/data/MySQL_AST_CREATE_tables.sql:/docker-entrypoint-initdb.d/MySQL_AST_CREATE_tables.sql
+            - ./mysql/data/sip-iax_phones.sql:/docker-entrypoint-initdb.d/sip-iax_phones.sql
+            - ./mysql/data/first_server_install.sql:/docker-entrypoint-initdb.d/first_server_install.sql
+        healthcheck:
+            test: if [ $$(ps -p 1 -o comm=) = "mysqld" ]; then exit 0; else exit 1; fi
+            interval: 5s
+            retries: 400
+
+
