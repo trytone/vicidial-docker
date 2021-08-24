@@ -1,13 +1,21 @@
-version: '2'
+version: '3'
 services:
     web:
-        build: ./web
+        build: 
+            context: ./web
+            args:
+                VICIDIAL_DB_HOST: mysql
+                VICIDIAL_DB_NAME: asterisk
+                VICIDIAL_DB_USER: cron
+                VICIDIAL_DB_PASSWORD: 1234
+                VICIDIAL_DB_CUSTOM_USER: custom
+                VICIDIAL_DB_CUSTOM_PASSWORD: custom1234
         container_name: vicidial
         restart: always
-        links:
-            - mysql
         ports:
             - 80:80
+        links:
+            - mysql
         depends_on:
             - mysql
     mysql:
@@ -22,12 +30,10 @@ services:
         ports:
             - 3308:3306
         volumes:
-            - ./mysql/data/MySQL_AST_CREATE_tables.sql:/docker-entrypoint-initdb.d/MySQL_AST_CREATE_tables.sql
-            - ./mysql/data/sip-iax_phones.sql:/docker-entrypoint-initdb.d/sip-iax_phones.sql
-            - ./mysql/data/first_server_install.sql:/docker-entrypoint-initdb.d/first_server_install.sql
+            - ./mysql/data:/var/lib/mysql
+            - ./mysql/import/MySQL_AST_CREATE_tables.sql:/docker-entrypoint-initdb.d/MySQL_AST_CREATE_tables.sql
+            - ./mysql/import/first_server_install.sql:/docker-entrypoint-initdb.d/first_server_install.sql
         healthcheck:
             test: if [ $$(ps -p 1 -o comm=) = "mysqld" ]; then exit 0; else exit 1; fi
             interval: 5s
             retries: 400
-
-
