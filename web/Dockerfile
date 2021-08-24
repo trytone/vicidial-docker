@@ -22,6 +22,7 @@ RUN mkdir -p /usr/src/astguiclient
 WORKDIR /usr/src/astguiclient
 RUN svn checkout svn://svn.eflo.net:3690/agc_2-X/trunk
 WORKDIR /usr/src/astguiclient/trunk
+RUN svn up -r 3204
 RUN perl install.pl \
 --DB_server=$VICIDIAL_DB_HOST \
 --DB_database=$VICIDIAL_DB_NAME \
@@ -33,7 +34,7 @@ RUN perl install.pl \
 --no-prompt \
 --web-only
 
-RUN echo '<META HTTP-EQUIV=REFRESH CONTENT=\"1; URL=/vicidial/welcome.php\">Please Hold while I redirect you!' > /var/www/localhost/htdocs/index.html
+RUN echo '<META HTTP-EQUIV=REFRESH CONTENT="1; URL=/vicidial/welcome.php">Please Hold while I redirect you!' > /var/www/localhost/htdocs/index.html
 
 # Copy configuration files
 COPY ./httpd.conf /etc/apache2

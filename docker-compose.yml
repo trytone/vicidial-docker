@@ -6,10 +6,10 @@ services:
             args:
                 VICIDIAL_DB_HOST: mysql
                 VICIDIAL_DB_NAME: asterisk
-                VICIDIAL_DB_USER: cron
-                VICIDIAL_DB_PASSWORD: 1234
-                VICIDIAL_DB_CUSTOM_USER: custom
-                VICIDIAL_DB_CUSTOM_PASSWORD: custom1234
+                VICIDIAL_DB_USER: root
+                VICIDIAL_DB_PASSWORD: root
+                VICIDIAL_DB_CUSTOM_USER: cron
+                VICIDIAL_DB_CUSTOM_PASSWORD: 1234
         container_name: vicidial
         restart: always
         ports:
@@ -18,6 +18,20 @@ services:
             - mysql
         depends_on:
             - mysql
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        container_name: phpmyadmin
+        restart: always
+        links:
+            - mysql
+        depends_on:
+            - mysql
+        environment:
+            - PMA_HOST=mysql
+            - PMA_USER=root
+            - PMA_PASSWORD=root
+        ports:
+            - 8080:80           
     mysql:
         image: mariadb
         container_name: mysql

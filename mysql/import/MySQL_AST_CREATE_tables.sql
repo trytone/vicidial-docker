@@ -1,6 +1,3 @@
-GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES on asterisk.* TO cron@'%' IDENTIFIED BY '1234';
-GRANT SELECT,INSERT,UPDATE,DELETE,LOCK TABLES on asterisk.* TO cron@localhost IDENTIFIED BY '1234';
-
 CREATE TABLE phones (
 extension VARCHAR(100),
 dialplan_number VARCHAR(20),
@@ -4940,11 +4937,6 @@ CREATE TABLE vicidial_peer_event_log_archive LIKE vicidial_peer_event_log;
 ALTER TABLE vicidial_peer_event_log_archive MODIFY peer_event_id INT(9) UNSIGNED NOT NULL;
 
 CREATE TABLE vicidial_inbound_caller_codes_archive LIKE vicidial_inbound_caller_codes;
-
-GRANT RELOAD ON *.* TO cron@'%';
-GRANT RELOAD ON *.* TO cron@localhost;
-
-flush privileges;
 
 INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,load_leads,campaign_detail,ast_admin_access,modify_users,alter_agent_interface_options) values('6666','1234','Admin','9','ADMIN','1','1','1','1','1');
 INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,active) values('VDAD','donotedit','Outbound Auto Dial','1','ADMIN','N');
