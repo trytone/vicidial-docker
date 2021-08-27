@@ -22,7 +22,7 @@ RUN mkdir -p /usr/src/astguiclient
 WORKDIR /usr/src/astguiclient
 RUN svn checkout svn://svn.eflo.net:3690/agc_2-X/trunk
 WORKDIR /usr/src/astguiclient/trunk
-RUN svn up -r 3204
+RUN svn up -r 3261
 RUN perl install.pl \
 --DB_server=$VICIDIAL_DB_HOST \
 --DB_database=$VICIDIAL_DB_NAME \

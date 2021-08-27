@@ -102,9 +102,6 @@ webphone_debug ENUM('Y','N') default 'N',
 outbound_alt_cid VARCHAR(20) default '',
 conf_qualify ENUM('Y','N') default 'Y',
 webphone_layout VARCHAR(255) default '',
-mohsuggest VARCHAR(100) default '',
-peer_status ENUM('UNKNOWN','REGISTERED','UNREGISTERED','REACHABLE','LAGGED','UNREACHABLE') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'UNKNOWN',
-ping_time SMALLINT(6) DEFAULT NULL,
 index (server_ip),
 index (voicemail_id),
 index (dialplan_number),
@@ -291,10 +288,8 @@ talked_sec INT(10),
 extension VARCHAR(100),
 user VARCHAR(20),
 lead_id INT(9) UNSIGNED default '0',
-campaign_id VARCHAR(20) default '',
 index (parked_time),
-index (lead_id),
-index (campaign_id)
+index (lead_id)
 ) ENGINE=MyISAM;
 
 CREATE INDEX uniqueid_park on park_log (uniqueid);
@@ -334,7 +329,7 @@ vendor_lead_code VARCHAR(20),
 source_id VARCHAR(50),
 list_id BIGINT(14) UNSIGNED NOT NULL DEFAULT '0',
 gmt_offset_now DECIMAL(4,2) DEFAULT '0.00',
-called_since_last_reset ENUM('Y','N','Y1','Y2','Y3','Y4','Y5','Y6','Y7','Y8','Y9','Y10','D') default 'N',
+called_since_last_reset ENUM('Y','N','Y1','Y2','Y3','Y4','Y5','Y6','Y7','Y8','Y9','Y10') default 'N',
 phone_code VARCHAR(10),
 phone_number VARCHAR(18) NOT NULL,
 title VARCHAR(4),
@@ -445,7 +440,6 @@ preview_lead_id INT(9) UNSIGNED default '0',
 external_lead_id INT(9) UNSIGNED default '0',
 last_inbound_call_time_filtered DATETIME,
 last_inbound_call_finish_filtered DATETIME,
-dial_campaign_id VARCHAR(8) default '',
 index (random_id),
 index (last_call_time),
 index (last_update_time),
@@ -568,7 +562,7 @@ campaign_detail ENUM('0','1') default '0',
 ast_admin_access ENUM('0','1') default '0',
 ast_delete_phones ENUM('0','1') default '0',
 delete_scripts ENUM('0','1') default '0',
-modify_leads ENUM('0','1','2','3','4','5','6') default '0',
+modify_leads ENUM('0','1') default '0',
 hotkeys_active ENUM('0','1') default '0',
 change_agent_campaign ENUM('0','1') default '0',
 agent_choose_ingroups ENUM('0','1') default '1',
@@ -688,10 +682,7 @@ max_inbound_filter_enabled ENUM('0','1') default '0',
 max_inbound_filter_statuses TEXT,
 max_inbound_filter_ingroups TEXT,
 max_inbound_filter_min_sec SMALLINT(5) default '-1',
-status_group_id VARCHAR(20) default '',
-mobile_number VARCHAR(20) default '',
-two_factor_override  ENUM('NOT_ACTIVE','ENABLED','DISABLED') default 'NOT_ACTIVE',
-manual_dial_filter VARCHAR(50) default 'DISABLED'
+status_group_id VARCHAR(20) default ''
 ) ENGINE=MyISAM;
 
 CREATE UNIQUE INDEX user ON vicidial_users (user);
@@ -783,14 +774,14 @@ campaign_rec_exten VARCHAR(20) default '8309',
 campaign_recording ENUM('NEVER','ONDEMAND','ALLCALLS','ALLFORCE') default 'ONDEMAND',
 campaign_rec_filename VARCHAR(50) default 'FULLDATE_CUSTPHONE',
 campaign_script VARCHAR(20),
-get_call_launch ENUM('NONE','SCRIPT','SCRIPTTWO','WEBFORM','WEBFORMTWO','WEBFORMTHREE','FORM','PREVIEW_WEBFORM','PREVIEW_WEBFORMTWO','PREVIEW_WEBFORMTHREE','PREVIEW_SCRIPT','PREVIEW_SCRIPTTWO','PREVIEW_FORM') default 'NONE',
+get_call_launch ENUM('NONE','SCRIPT','SCRIPTTWO','WEBFORM','WEBFORMTWO','WEBFORMTHREE','FORM','PREVIEW_WEBFORM','PREVIEW_WEBFORMTWO','PREVIEW_WEBFORMTHREE') default 'NONE',
 am_message_exten VARCHAR(100) default 'vm-goodbye',
 amd_send_to_vmx ENUM('Y','N') default 'N',
 xferconf_a_dtmf VARCHAR(50),
 xferconf_a_number VARCHAR(50),
 xferconf_b_dtmf VARCHAR(50),
 xferconf_b_number VARCHAR(50),
-alt_number_dialing ENUM('N','Y','SELECTED','SELECTED_TIMER_ALT','SELECTED_TIMER_ADDR3','UNSELECTED','UNSELECTED_TIMER_ALT','UNSELECTED_TIMER_ADDR3') default 'N',
+alt_number_dialing ENUM('N','Y','SELECTED','SELECTED_TIMER_ALT','SELECTED_TIMER_ADDR3') default 'N',
 scheduled_callbacks ENUM('Y','N') default 'N',
 lead_filter_id VARCHAR(20) default 'NONE',
 drop_call_seconds TINYINT(3) default '5',
@@ -803,7 +794,7 @@ closer_campaigns TEXT,
 use_internal_dnc ENUM('Y','N','AREACODE') default 'N',
 allcalls_delay SMALLINT(3) UNSIGNED default '0',
 omit_phone_code ENUM('Y','N') default 'N',
-dial_method ENUM('MANUAL','RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE','INBOUND_MAN','SHARED_RATIO','SHARED_ADAPT_HARD_LIMIT','SHARED_ADAPT_TAPERED','SHARED_ADAPT_AVERAGE') default 'MANUAL',
+dial_method ENUM('MANUAL','RATIO','ADAPT_HARD_LIMIT','ADAPT_TAPERED','ADAPT_AVERAGE','INBOUND_MAN') default 'MANUAL',
 available_only_ratio_tally ENUM('Y','N') default 'N',
 adaptive_dropped_percentage VARCHAR(4) default '3',
 adaptive_maximum_level VARCHAR(6) default '3.0',
@@ -1053,31 +1044,7 @@ opensips_cid_name VARCHAR(15) default '',
 amd_agent_route_options ENUM('ENABLED','DISABLED','PENDING') default 'DISABLED',
 browser_alert_sound VARCHAR(20) default '---NONE---',
 browser_alert_volume TINYINT(3) UNSIGNED default '50',
-three_way_record_stop_exception VARCHAR(40) default 'DISABLED',
-pause_max_exceptions VARCHAR(40) default '',
-hopper_drop_run_trigger VARCHAR(1) default 'N',
-daily_call_count_limit TINYINT(3) UNSIGNED default '0',
-daily_limit_manual VARCHAR(20) default 'DISABLED',
-transfer_button_launch VARCHAR(12) default 'NONE',
-shared_dial_rank TINYINT(3) default '99',
-agent_search_method VARCHAR(2) default '',
-qc_scorecard_id VARCHAR(20) DEFAULT '',
-qc_statuses_id VARCHAR(20) DEFAULT '',
-clear_form ENUM('DISABLED','ENABLED','ACKNOWLEDGE') default 'ACKNOWLEDGE',
-leave_3way_start_recording ENUM('DISABLED','ALL_CALLS','ALL_BUT_EXCEPTIONS','ONLY_EXCEPTIONS') default 'DISABLED',
-leave_3way_start_recording_exception VARCHAR(40) default 'DISABLED',
-calls_waiting_vl_one VARCHAR(25) default 'DISABLED',
-calls_waiting_vl_two VARCHAR(25) default 'DISABLED',
-calls_inqueue_count_one VARCHAR(40) default 'DISABLED',
-calls_inqueue_count_two VARCHAR(40) default 'DISABLED',
-in_man_dial_next_ready_seconds SMALLINT(5) UNSIGNED default '0',
-in_man_dial_next_ready_seconds_override VARCHAR(40) default 'DISABLED',
-transfer_no_dispo ENUM('DISABLED','EXTERNAL_ONLY','LOCAL_ONLY','LEAVE3WAY_ONLY','LOCAL_AND_EXTERNAL','LOCAL_AND_LEAVE3WAY','LEAVE3WAY_AND_EXTERNAL','LOCAL_AND_EXTERNAL_AND_LEAVE3WAY') default 'DISABLED',
-call_limit_24hour_method ENUM('DISABLED','PHONE_NUMBER','LEAD') default 'DISABLED',
-call_limit_24hour_scope ENUM('SYSTEM_WIDE','CAMPAIGN_LISTS') default 'SYSTEM_WIDE',
-call_limit_24hour TINYINT(3) UNSIGNED default '0',
-call_limit_24hour_override VARCHAR(40) default 'DISABLED',
-cid_group_id_two VARCHAR(20) default '---DISABLED---'
+three_way_record_stop_exception VARCHAR(40) default 'DISABLED'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_lists (
@@ -1116,12 +1083,7 @@ auto_active_list_rank SMALLINT(5) default '0',
 cache_count INT(9) UNSIGNED default '0',
 cache_count_new INT(9) UNSIGNED default '0',
 cache_count_dialable_new INT(9) UNSIGNED default '0',
-cache_date DATETIME,
-inbound_drop_voicemail VARCHAR(20),
-inbound_after_hours_voicemail VARCHAR(20),
-qc_scorecard_id VARCHAR(20) DEFAULT '',
-qc_statuses_id VARCHAR(20) DEFAULT '',
-qc_web_form_address VARCHAR(255) DEFAULT ''
+cache_date DATETIME
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_statuses (
@@ -1371,13 +1333,7 @@ place_in_line_you_next_filename TEXT,
 ingroup_script_two VARCHAR(20) default '',
 browser_alert_sound VARCHAR(20) default '---NONE---',
 browser_alert_volume TINYINT(3) UNSIGNED default '50',
-answer_signal ENUM('START','ROUTE','NONE') DEFAULT 'START',
-no_agent_delay SMALLINT(5) default '0',
-agent_search_method VARCHAR(2) default '',
-qc_scorecard_id VARCHAR(20) DEFAULT '',
-qc_statuses_id VARCHAR(20) DEFAULT '',
-populate_lead_comments VARCHAR(40) default 'CALLERID_NAME',
-drop_call_seconds_override VARCHAR(40) default 'DISABLED'
+answer_signal ENUM('START','ROUTE','NONE') DEFAULT 'START'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_stations (
@@ -1653,9 +1609,7 @@ agent_custtalk_today BIGINT(14) UNSIGNED default '0',
 agent_acw_today BIGINT(14) UNSIGNED default '0',
 agent_pause_today BIGINT(14) UNSIGNED default '0',
 answering_machines_today INT(9) UNSIGNED default '0',
-agenthandled_today INT(9) UNSIGNED default '0',
-park_calls_today MEDIUMINT(8) UNSIGNED default '0',
-park_sec_today BIGINT(14) UNSIGNED default '0'
+agenthandled_today INT(9) UNSIGNED default '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_dnc (
@@ -1828,7 +1782,7 @@ audio_store_purge TEXT,
 svn_revision INT(9) default '0',
 queuemetrics_socket VARCHAR(20) default 'NONE',
 queuemetrics_socket_url TEXT,
-enhanced_disconnect_logging ENUM('0','1','2','3','4','5','6') default '0',
+enhanced_disconnect_logging ENUM('0','1') default '0',
 allow_emails ENUM('0','1') default '0',
 level_8_disable_add ENUM('0','1') default '0',
 pass_hash_enabled ENUM('0','1') default '0',
@@ -1907,40 +1861,8 @@ user_account_emails ENUM('DISABLED','SEND_NO_PASS','SEND_WITH_PASS') DEFAULT 'DI
 outbound_cid_any ENUM('DISABLED','API_ONLY') DEFAULT 'DISABLED',
 entries_per_page SMALLINT(5) UNSIGNED DEFAULT '0',
 browser_call_alerts ENUM('0','1','2') DEFAULT '0',
-queuemetrics_pausereason ENUM('STANDARD','EVERY_NEW','EVERY_NEW_ADMINCALL','EVERY_NEW_ALLCALL') default 'STANDARD',
-inbound_answer_config ENUM('0','1','2','3','4','5') DEFAULT '0',
-enable_international_dncs ENUM('0','1') default '0',
-web_loader_phone_strip VARCHAR(10) default 'DISABLED',
-manual_dial_phone_strip VARCHAR(10) default 'DISABLED',
-daily_call_count_limit ENUM('0','1') default '0',
-allow_shared_dial ENUM('0','1','2','3','4','5','6') default '0',
-agent_search_method ENUM('0','1','2','3','4','5','6') default '0',
-phone_defaults_container VARCHAR(40) default '---DISABLED---',
-qc_claim_limit TINYINT UNSIGNED DEFAULT '3',
-qc_expire_days TINYINT UNSIGNED DEFAULT '3',
-two_factor_auth_hours SMALLINT(5) default '0',
-two_factor_container VARCHAR(40) default '---DISABLED---',
-agent_hidden_sound VARCHAR(20) default 'click_quiet',
-agent_hidden_sound_volume TINYINT(3) UNSIGNED default '25',
-agent_hidden_sound_seconds TINYINT(3) UNSIGNED default '0',
-agent_screen_timer VARCHAR(20) default 'setTimeout',
-label_lead_id VARCHAR(60) default '',
-label_list_id VARCHAR(60) default '',
-label_entry_date VARCHAR(60) default '',
-label_gmt_offset_now VARCHAR(60) default '',
-label_source_id VARCHAR(60) default '',
-label_called_since_last_reset VARCHAR(60) default '',
-label_status VARCHAR(60) default '',
-label_user VARCHAR(60) default '',
-label_date_of_birth VARCHAR(60) default '',
-label_country_code VARCHAR(60) default '',
-label_last_local_call_time VARCHAR(60) default '',
-label_called_count VARCHAR(60) default '',
-label_rank VARCHAR(60) default '',
-label_owner VARCHAR(60) default '',
-label_entry_list_id VARCHAR(60) default '',
-call_limit_24hour ENUM('0','1') default '0',
-call_limit_24hour_reset DATETIME default '2000-01-01 00:00:01'
+queuemetrics_pausereason ENUM('STANDARD','EVERY_NEW') default 'STANDARD',
+inbound_answer_config ENUM('0','1','2','3','4','5') DEFAULT '0'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_campaigns_list_mix (
@@ -2867,7 +2789,7 @@ field_name VARCHAR(5000),
 field_description VARCHAR(100),
 field_rank SMALLINT(5),
 field_help VARCHAR(1000),
-field_type ENUM('TEXT','AREA','SELECT','MULTI','RADIO','CHECKBOX','DATE','TIME','DISPLAY','SCRIPT','HIDDEN','READONLY','HIDEBLOB','SWITCH','SOURCESELECT','BUTTON') default 'TEXT',
+field_type ENUM('TEXT','AREA','SELECT','MULTI','RADIO','CHECKBOX','DATE','TIME','DISPLAY','SCRIPT','HIDDEN','READONLY','HIDEBLOB','SWITCH') default 'TEXT',
 field_options VARCHAR(5000),
 field_size SMALLINT(5),
 field_max SMALLINT(5),
@@ -2986,22 +2908,7 @@ label_alt_phone VARCHAR(60) default '',
 label_security_phrase VARCHAR(60) default '',
 label_email VARCHAR(60) default '',
 label_comments VARCHAR(60) default '',
-user_group VARCHAR(20) default '---ALL---',
-label_lead_id VARCHAR(60) default '',
-label_list_id VARCHAR(60) default '',
-label_entry_date VARCHAR(60) default '',
-label_gmt_offset_now VARCHAR(60) default '',
-label_source_id VARCHAR(60) default '',
-label_called_since_last_reset VARCHAR(60) default '',
-label_status VARCHAR(60) default '',
-label_user VARCHAR(60) default '',
-label_date_of_birth VARCHAR(60) default '',
-label_country_code VARCHAR(60) default '',
-label_last_local_call_time VARCHAR(60) default '',
-label_called_count VARCHAR(60) default '',
-label_rank VARCHAR(60) default '',
-label_owner VARCHAR(60) default '',
-label_entry_list_id VARCHAR(60) default ''
+user_group VARCHAR(20) default '---ALL---'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_agent_skip_log (
@@ -3207,6 +3114,7 @@ index (caller_code),
 index (lead_id),
 index (call_date)
 ) ENGINE=MyISAM;
+
 
 CREATE TABLE vicidial_qc_agent_log (
 qc_agent_log_id INT(9) unsigned NOT NULL AUTO_INCREMENT,
@@ -3455,7 +3363,7 @@ unique index vdweb (webserver, hostname)
 
 CREATE TABLE vicidial_urls (
 url_id INT(9) UNSIGNED AUTO_INCREMENT PRIMARY KEY NOT NULL,
-url VARCHAR(250) default '',
+url VARCHAR(255) default '',
 unique index (url)
 ) ENGINE=MyISAM;
 
@@ -3488,13 +3396,11 @@ index (avatar_id)
 ) ENGINE=MyISAM;
 
 CREATE TABLE audio_store_details (
-audio_filename VARCHAR(250) NOT NULL,
+audio_filename VARCHAR(255) NOT NULL,
 audio_format VARCHAR(10) default 'unknown',
 audio_filesize BIGINT(20) UNSIGNED default '0',
 audio_epoch BIGINT(20) UNSIGNED default '0',
 audio_length INT(10) UNSIGNED default '0',
-wav_format_details VARCHAR(255) default '',
-wav_asterisk_valid ENUM('','GOOD','BAD','NA') default '',
 unique index (audio_filename)
 ) ENGINE=MyISAM;
 
@@ -3844,8 +3750,7 @@ alt_row1_background VARCHAR(6) default 'BDFFBD',
 alt_row2_background VARCHAR(6) default '99FF99',
 alt_row3_background VARCHAR(6) default 'CCFFCC',
 user_group VARCHAR(20) default '---ALL---',
-web_logo VARCHAR(100) default 'default_new',
-button_color VARCHAR(6) default 'EFEFEF'
+web_logo VARCHAR(100) default 'default_new'
 ) ENGINE=MyISAM;
 
 CREATE TABLE vicidial_user_list_new_lead (
@@ -4411,273 +4316,6 @@ index (lead_id),
 index (call_date)
 ) ENGINE=MyISAM;
 
-CREATE TABLE vicidial_country_dnc_queue (
-dnc_file_id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-filename varchar(250) DEFAULT NULL,
-country_code varchar(3) DEFAULT NULL,
-file_layout varchar(30) DEFAULT NULL,
-file_status enum('UPLOADING','READY','PENDING','INVALID LAYOUT','PROCESSING','FINISHED','CANCELLED') DEFAULT NULL,
-file_action enum('PURGE','APPEND') DEFAULT NULL,
-date_uploaded DATETIME DEFAULT NULL,
-total_records int(10) UNSIGNED DEFAULT NULL,
-records_processed int(10) UNSIGNED DEFAULT NULL,
-records_inserted int(10) UNSIGNED DEFAULT NULL,
-date_processed DATETIME DEFAULT NULL,
-PRIMARY KEY (dnc_file_id),
-KEY vicidial_country_dnc_queue_filename_key (filename)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE vicidial_lead_call_daily_counts (
-lead_id INT(9) UNSIGNED NOT NULL,
-list_id BIGINT(14) UNSIGNED DEFAULT '0',
-called_count_total TINYINT(3) UNSIGNED default '0',
-called_count_auto TINYINT(3) UNSIGNED default '0',
-called_count_manual TINYINT(3) UNSIGNED default '0',
-modify_date DATETIME,
-unique index vlcdc_lead (lead_id),
-index(list_id)
-) ENGINE=MyISAM;
-
-CREATE TABLE vicidial_agent_dial_campaigns (
-campaign_id VARCHAR(8),
-group_id VARCHAR(20),
-user VARCHAR(20),
-validate_time DATETIME,
-dial_time DATETIME,
-index (user),
-index (campaign_id)
-) ENGINE=MyISAM;
-
-CREATE UNIQUE INDEX vadc_key on vicidial_agent_dial_campaigns(campaign_id, user);
-
-CREATE TABLE vicidial_shared_log (
-campaign_id VARCHAR(20) NOT NULL,
-server_ip VARCHAR(15) NOT NULL,
-log_time DATETIME,
-total_agents SMALLINT(5) default '0',
-total_calls SMALLINT(5) default '0',
-debug_output TEXT,
-adapt_output TEXT,
-index (campaign_id),
-index (log_time)
-) ENGINE=MyISAM;
-
-CREATE TABLE vicidial_shared_drops (
-callerid VARCHAR(20),
-server_ip VARCHAR(15) NOT NULL,
-campaign_id VARCHAR(20),
-status ENUM('SENT','RINGING','LIVE','XFER','PAUSED','CLOSER','BUSY','DISCONNECT','IVR') default 'PAUSED',
-lead_id INT(9) UNSIGNED NOT NULL,
-uniqueid VARCHAR(20),
-channel VARCHAR(100),
-phone_code VARCHAR(10),
-phone_number VARCHAR(18),
-call_time DATETIME,
-call_type ENUM('IN','OUT','OUTBALANCE') default 'OUT',
-stage VARCHAR(20) default 'START',
-last_update_time DATETIME,
-alt_dial VARCHAR(6) default 'NONE',
-drop_time DATETIME,
-index (callerid),
-index (call_time),
-index (drop_time)
-) ENGINE=MyISAM;
-
-CREATE TABLE quality_control_checkpoint_log (
-qc_checkpoint_log_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-qc_log_id INT(10) UNSIGNED DEFAULT NULL,
-campaign_id VARCHAR(8) DEFAULT NULL,
-group_id VARCHAR(20) DEFAULT NULL,
-list_id BIGINT(14) UNSIGNED DEFAULT NULL,
-qc_scorecard_id VARCHAR(20) DEFAULT NULL,
-checkpoint_row_id INT(10) UNSIGNED DEFAULT NULL,
-checkpoint_text TEXT,
-checkpoint_text_presets TEXT,
-checkpoint_rank TINYINT(3) UNSIGNED DEFAULT NULL,
-checkpoint_points TINYINT(3) UNSIGNED DEFAULT NULL,
-instant_fail ENUM('Y','N') DEFAULT 'N',
-instant_fail_value ENUM('Y', 'N') default 'N',
-checkpoint_points_earned TINYINT(5) UNSIGNED DEFAULT NULL,
-qc_agent VARCHAR(20) DEFAULT NULL,
-checkpoint_comment_agent TEXT,
-PRIMARY KEY (qc_checkpoint_log_id)
-) ENGINE=MyISAM;
-
-CREATE TABLE quality_control_checkpoints (
-checkpoint_row_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-qc_scorecard_id VARCHAR(20) DEFAULT NULL,
-checkpoint_text TEXT,
-checkpoint_text_presets TEXT,
-checkpoint_rank INT(3) UNSIGNED DEFAULT NULL,
-checkpoint_points TINYINT(3) UNSIGNED DEFAULT NULL,
-instant_fail ENUM('Y','N') DEFAULT 'N',
-admin_notes TEXT,
-active ENUM('Y','N') DEFAULT NULL,
-campaign_ids TEXT,
-ingroups TEXT,
-list_ids TEXT,
-create_date DATETIME DEFAULT NULL,
-create_user VARCHAR(10) DEFAULT NULL,
-modify_date TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-modify_user VARCHAR(10) DEFAULT NULL,
-PRIMARY KEY (checkpoint_row_id)
-) ENGINE=MyISAM;
-
-CREATE TABLE quality_control_queue (
-qc_log_id INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-qc_display_method ENUM('CALL','LEAD') DEFAULT 'CALL',
-lead_id INT(10) UNSIGNED DEFAULT NULL,
-status VARCHAR(6) DEFAULT NULL,
-call_date DATETIME DEFAULT NULL,
-agent_log_id INT(9) UNSIGNED DEFAULT NULL,
-user VARCHAR(20) DEFAULT NULL,
-user_group VARCHAR(20) DEFAULT NULL,
-campaign_id VARCHAR(8) DEFAULT NULL,
-group_id VARCHAR(20) DEFAULT NULL,
-list_id BIGINT(14) UNSIGNED DEFAULT NULL,
-scorecard_source ENUM('CAMPAIGN','INGROUP','LIST') DEFAULT 'CAMPAIGN',
-qc_web_form_address VARCHAR(255) DEFAULT NULL,
-vicidial_id VARCHAR(20) DEFAULT NULL,
-recording_id INT(10) UNSIGNED DEFAULT NULL,
-qc_scorecard_id VARCHAR(20) DEFAULT NULL,
-qc_agent VARCHAR(20) DEFAULT NULL,
-qc_user_group VARCHAR(20) DEFAULT NULL,
-qc_status VARCHAR(20) DEFAULT NULL,
-date_modified TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-date_claimed DATETIME DEFAULT NULL,
-date_completed DATETIME DEFAULT NULL,
-PRIMARY KEY (qc_log_id),
-UNIQUE KEY quality_control_queue_agent_log_id_key (agent_log_id),
-KEY quality_control_queue_lead_id_key (lead_id)
-) ENGINE=MyISAM;
-
-CREATE TABLE quality_control_scorecards (
-qc_scorecard_id VARCHAR(20) NOT NULL,
-scorecard_name VARCHAR(255) DEFAULT NULL,
-active ENUM('Y','N') DEFAULT 'Y',
-passing_score SMALLINT(5) UNSIGNED DEFAULT 0,
-last_modified TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-PRIMARY KEY (qc_scorecard_id)
-) ENGINE=MyISAM;
-
-CREATE TABLE vicidial_two_factor_auth (
-auth_date DATETIME,
-auth_exp_date DATETIME,
-user VARCHAR(20) default '',
-auth_stage ENUM('0','1','2','3','4','5','6') default '0',
-auth_code VARCHAR(20) default '',
-auth_code_exp_date DATETIME,
-auth_method VARCHAR(20) default 'EMAIL',
-auth_attempts SMALLINT(5) default '0',
-index (user),
-index (auth_date),
-index (auth_exp_date)
-) ENGINE=MyISAM;
-
-CREATE TABLE vicidial_agent_visibility_log (
-db_time DATETIME NOT NULL,
-event_start_epoch INT(10) UNSIGNED,
-event_end_epoch INT(10) UNSIGNED,
-user VARCHAR(20),
-length_in_sec INT(10),
-visibility  ENUM('VISIBLE','HIDDEN','LOGIN','NONE') default 'NONE',
-agent_log_id INT(9) UNSIGNED,
-index (db_time),
-unique index visibleuser (user, visibility, event_end_epoch)
-) ENGINE=MyISAM;
-
-CREATE TABLE vicidial_peer_event_log (
-`peer_event_id` INT(9) UNSIGNED NOT NULL AUTO_INCREMENT,
-`event_type` ENUM('UNKNOWN','REGISTERED','UNREGISTERED','REACHABLE','LAGGED','UNREACHABLE','RTPDISCONNECT','CRITICALTIMEOUT') COLLATE utf8_unicode_ci DEFAULT 'UNKNOWN',
-`event_date` DATETIME(6) NOT NULL,
-`channel` VARCHAR(100) COLLATE utf8_unicode_ci DEFAULT '',
-`server_ip` VARCHAR(15) COLLATE utf8_unicode_ci NOT NULL,
-`host_ip` VARCHAR(15) COLLATE utf8_unicode_ci DEFAULT '',
-`port` SMALLINT(6) DEFAULT NULL,
-`channel_type` ENUM('IAX2','SIP') COLLATE utf8_unicode_ci DEFAULT NULL,
-`peer` VARCHAR(100) COLLATE utf8_unicode_ci DEFAULT '',
-`data` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT '',
-PRIMARY KEY (`peer_event_id`),
-KEY `event_date` (`event_date`),
-KEY `peer` (`peer`),
-KEY `channel` (`channel`)
-) ENGINE=MyISAM AUTO_INCREMENT=630320 DEFAULT CHARSET=utf8 
-COLLATE=utf8_unicode_ci;
-
-CREATE TABLE vicidial_tiltx_shaken_log (
-db_time DATETIME NOT NULL,
-server_ip VARCHAR(15) NOT NULL,
-url_log_id INT(9) UNSIGNED NOT NULL,
-caller_code VARCHAR(20),
-phone_number VARCHAR(19) default '',
-CIDnumber VARCHAR(19) default '',
-CallerIDToUse VARCHAR(19) default '',
-IsDNC TINYINT(1) default '0',
-IsDisconnected TINYINT(1) default '0',
-TILTXID VARCHAR(50),
-Identity TEXT,
-CAID VARCHAR(50),
-index (db_time)
-) ENGINE=MyISAM;
-
-CREATE TABLE vicidial_lead_24hour_calls (
-lead_id INT(9) UNSIGNED NOT NULL,
-list_id BIGINT(14) UNSIGNED DEFAULT '0',
-call_date DATETIME,
-phone_number VARCHAR(18),
-phone_code VARCHAR(10),
-state VARCHAR(2),
-call_type ENUM('MANUAL','AUTO','') default '',
-index(lead_id),
-index(call_date),
-index(phone_number)
-) ENGINE=MyISAM;
-
-CREATE TABLE `vicidial_khomp_log` (
-`khomp_log_id` int(9) unsigned NOT NULL AUTO_INCREMENT,
-`caller_code` varchar(30) COLLATE utf8_unicode_ci NOT NULL,
-`lead_id` int(10) unsigned DEFAULT 0,
-`server_ip` varchar(15) COLLATE utf8_unicode_ci NOT NULL,
-`khomp_header` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-`khomp_id` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
-`khomp_id_format` enum('CALLERCODE','CALLERCODE_EXTERNIP','CALLERCODE_CAMP_EXTERNIP') COLLATE utf8_unicode_ci DEFAULT NULL,
-`sip_call_id` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
-`start_date` datetime(6) DEFAULT NULL,
-`audio_date` datetime(6) DEFAULT NULL,
-`answer_date` datetime(6) DEFAULT NULL,
-`end_date` datetime(6) DEFAULT NULL,
-`analyzer_date` datetime(6) DEFAULT NULL,
-`conclusion` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-`pattern` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
-`action` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-`hangup_origin` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
-`hangup_cause_recv` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
-`hangup_cause_sent` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
-`hangup_auth_time` varchar(20) COLLATE utf8_unicode_ci DEFAULT '0',
-`hangup_query_time` varchar(20) COLLATE utf8_unicode_ci DEFAULT '0',
-`route_auth_time` varchar(20) COLLATE utf8_unicode_ci DEFAULT '0',
-`route_query_time` varchar(20) COLLATE utf8_unicode_ci DEFAULT '0',
-`vici_action` varchar(10) COLLATE utf8_unicode_ci DEFAULT NULL,
-`vici_status` varchar(6) COLLATE utf8_unicode_ci DEFAULT NULL,
-PRIMARY KEY (`khomp_log_id`),
-KEY `caller_code` (`caller_code`),
-KEY `start_date` (`start_date`),
-KEY `khomp_id` (`khomp_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
-CREATE TABLE vicidial_inbound_caller_codes (
-uniqueid VARCHAR(50) NOT NULL,
-server_ip VARCHAR(15),
-call_date DATETIME,
-group_id VARCHAR(20) NOT NULL,
-lead_id INT(9) UNSIGNED,
-caller_code VARCHAR(30) NOT NULL,
-prev_caller_code VARCHAR(40) NOT NULL,
-index (uniqueid),
-index (call_date),
-unique index cicc_cd (caller_code, uniqueid)
-) ENGINE=MyISAM;
-
 
 ALTER TABLE vicidial_email_list MODIFY message text character set utf8;
 
@@ -4782,18 +4420,16 @@ INSERT INTO vicidial_process_triggers SET trigger_id='LOAD_LEADS',server_ip='10.
 
 INSERT INTO vicidial_call_menu SET menu_id='defaultlog',menu_name='logging of all outbound calls from agent phones',menu_prompt='sip-silence',menu_timeout='20',menu_timeout_prompt='NONE',menu_invalid_prompt='NONE',menu_repeat='0',menu_time_check='0',call_time_id='',track_in_vdac='0',custom_dialplan_entry='exten => _X.,1,AGI(agi-NVA_recording.agi,BOTH------Y---Y---Y)\nexten => _X.,n,Goto(default,${EXTEN},1)',tracking_group='';
 INSERT INTO vicidial_call_menu SET menu_id='default---agent',menu_name='agent phones restricted to only internal extensions',menu_prompt='sip-silence',menu_timeout='20',menu_timeout_prompt='NONE',menu_invalid_prompt='NONE',menu_repeat='0',menu_time_check='0',call_time_id='',track_in_vdac='0',custom_dialplan_entry='include => vicidial-auto-internal\ninclude => vicidial-auto-phones\n',tracking_group='';
-INSERT INTO vicidial_call_menu (menu_id,menu_name,menu_prompt,menu_timeout,menu_timeout_prompt,menu_invalid_prompt,menu_repeat,menu_time_check,call_time_id,track_in_vdac,custom_dialplan_entry,tracking_group,dtmf_log,dtmf_field,user_group,qualify_sql,alt_dtmf_log,question,answer_signal) values('2FA_say_auth_code','2FA_say_auth_code','sip-silence|hello|your|access-code|is|cm_speak_var.agi,say_digits---access_code---DP',1,'NONE','NONE',1,'0','24hours','1','','CALLMENU','0','NONE','---ALL---','','0',0,'Y');
 
 INSERT INTO vicidial_call_menu_options SET menu_id='defaultlog',option_value='TIMEOUT',option_description='hangup',option_route='HANGUP',option_route_value='vm-goodbye',option_route_value_context='';
 INSERT INTO vicidial_call_menu_options SET menu_id='default---agent',option_value='TIMEOUT',option_description='hangup',option_route='HANGUP',option_route_value='vm-goodbye',option_route_value_context='';
-INSERT INTO vicidial_call_menu_options (menu_id,option_value,option_description,option_route,option_route_value,option_route_value_context) values('2FA_say_auth_code','TIMEOUT','','HANGUP','','');
 
 INSERT INTO vicidial_scripts (script_id,script_name,script_comments,active,script_text) values('CALLNOTES','Call Notes and Appointment Setting','','Y','<iframe src=\"../agc/vdc_script_notes.php?lead_id=--A--lead_id--B--&vendor_id=--A--vendor_lead_code--B--&list_id=--A--list_id--B--&gmt_offset_now=--A--gmt_offset_now--B--&phone_code=--A--phone_code--B--&phone_number=--A--phone_number--B--&title=--A--title--B--&first_name=--A--first_name--B--&middle_initial=--A--middle_initial--B--&last_name=--A--last_name--B--&address1=--A--address1--B--&address2=--A--address2--B--&address3=--A--address3--B--&city=--A--city--B--&state=--A--state--B--&province=--A--province--B--&postal_code=--A--postal_code--B--&country_code=--A--country_code--B--&gender=--A--gender--B--&date_of_birth=--A--date_of_birth--B--&alt_phone=--A--alt_phone--B--&email=--A--email--B--&security_phrase=--A--security_phrase--B--&comments=--A--comments--B--&user=--A--user--B--&pass=--A--pass--B--&campaign=--A--campaign--B--&phone_login=--A--phone_login--B--&fronter=--A--fronter--B--&closer=--A--user--B--&group=--A--group--B--&channel_group=--A--group--B--&SQLdate=--A--SQLdate--B--&epoch=--A--epoch--B--&uniqueid=--A--uniqueid--B--&rank=--A--rank--B--&owner=--A--owner--B--&customer_zap_channel=--A--customer_zap_channel--B--&server_ip=--A--server_ip--B--&SIPexten=--A--SIPexten--B--&session_id=--A--session_id--B--\" style=\"background-color:transparent;\" scrolling=\"auto\" frameborder=\"0\" allowtransparency=\"true\" id=\"popupFrame\" name=\"popupFrame\"  width=\"--A--script_width--B--\" height=\"--A--script_height--B--\" STYLE=\"z-index:17\"> </iframe>');
 
 INSERT INTO vicidial_custom_leadloader_templates (template_id, template_name, template_description, list_id, standard_variables, custom_table, custom_variables, template_statuses) values ('SAMPLE_TEMPLATE','Sample template','',999,'phone_number,9|first_name,0|last_name,1|address1,3|address2,4|address3,5|city,6|state,7|postal_code,8|','custom_999','appointment_date,2|appointment_notes,9|nearest_city,2|','');
 
-INSERT INTO vicidial_screen_colors VALUES ('red_rust','dark red rust','Y','804435','E7D0C2','C68C71','D9B39F','D9B49F','C68C72','C68C73','BDFFBD','99FF99','CCFFCC','---ALL---','default_new','EFEFEF'),('pale_green','pale green','Y','738035','E0E7C2','B6C572','C4CF8B','B6C572','C4CF8B','C4CF8B','BDFFBD','99FF99','CCFFCC','---ALL---','default_new','EFEFEF'),('alt_green','alternate green','Y','333333','D6E3B2','AEC866','BCD180','BCD180','AEC866','AEC866','BDFFBD','99FF99','CCFFCC','---ALL---','default_new','EFEFEF'),('default_blue_test','default blue test','Y','015B91','D9E6FE','9BB9FB','B9CBFD','8EBCFD','B6D3FC','A3C3D6','BDFFBD','99FF99','CCFFCC','---ALL---','default_new','EFEFEF'),('basic_orange','basic orange','Y','804d00','ffebcc','ffcc80','ffd699','ffcc80','ffd699','ffcc80','BDFFBD','99FF99','CCFFCC','---ALL---','default_new','EFEFEF'),('basic_purple','basic purple','Y','660066','ffccff','ff99ff','ffb3ff','ff99ff','ffb3ff','ff99ff','BDFFBD','99FF99','CCFFCC','---ALL---','SAMPLE.png','EFEFEF'),('basic_yellow','basic yellow','Y','666600','ffffcc','ffff66','ffff99','ffff66','ffff99','ffff66','BDFFBD','99FF99','CCFFCC','---ALL---','default_new','EFEFEF'),('basic_red','basic red','Y','800000','ffe6e6','ff9999','ffb3b3','ff9999','ffb3b3','ff9999','BDFFBD','99FF99','CCFFCC','---ALL---','default_new','EFEFEF');
-INSERT INTO vicidial_screen_colors VALUES ('default_grey_agent','default grey agent','Y','FFFFFF','cccccc','E6E6E6','E6E6E6','E6E6E6','E6E6E6','E6E6E6','E6E6E6','E6E6E6','E6E6E6','---ALL---','DEFAULTAGENT.png','EFEFEF');
+INSERT INTO vicidial_screen_colors VALUES ('red_rust','dark red rust','Y','804435','E7D0C2','C68C71','D9B39F','D9B49F','C68C72','C68C73','BDFFBD','99FF99','CCFFCC','---ALL---','default_new'),('pale_green','pale green','Y','738035','E0E7C2','B6C572','C4CF8B','B6C572','C4CF8B','C4CF8B','BDFFBD','99FF99','CCFFCC','---ALL---','default_new'),('alt_green','alternate green','Y','333333','D6E3B2','AEC866','BCD180','BCD180','AEC866','AEC866','BDFFBD','99FF99','CCFFCC','---ALL---','default_new'),('default_blue_test','default blue test','Y','015B91','D9E6FE','9BB9FB','B9CBFD','8EBCFD','B6D3FC','A3C3D6','BDFFBD','99FF99','CCFFCC','---ALL---','default_new'),('basic_orange','basic orange','Y','804d00','ffebcc','ffcc80','ffd699','ffcc80','ffd699','ffcc80','BDFFBD','99FF99','CCFFCC','---ALL---','default_new'),('basic_purple','basic purple','Y','660066','ffccff','ff99ff','ffb3ff','ff99ff','ffb3ff','ff99ff','BDFFBD','99FF99','CCFFCC','---ALL---','SAMPLE.png'),('basic_yellow','basic yellow','Y','666600','ffffcc','ffff66','ffff99','ffff66','ffff99','ffff66','BDFFBD','99FF99','CCFFCC','---ALL---','default_new'),('basic_red','basic red','Y','800000','ffe6e6','ff9999','ffb3b3','ff9999','ffb3b3','ff9999','BDFFBD','99FF99','CCFFCC','---ALL---','default_new');
+INSERT INTO vicidial_screen_colors VALUES ('default_grey_agent','default grey agent','Y','FFFFFF','cccccc','E6E6E6','E6E6E6','E6E6E6','E6E6E6','E6E6E6','E6E6E6','E6E6E6','E6E6E6','---ALL---','DEFAULTAGENT.png');
 
 UPDATE system_settings SET qc_last_pull_time=NOW();
 
@@ -4928,16 +4564,6 @@ CREATE UNIQUE INDEX vlesa on vicidial_sip_action_log_archive (caller_code,call_d
 
 CREATE TABLE vicidial_vmm_counts_archive LIKE vicidial_vmm_counts;
 
-CREATE TABLE park_log_archive LIKE park_log;
-CREATE UNIQUE INDEX uniqueidtime_park on park_log_archive (uniqueid,parked_time);
-
-CREATE TABLE vicidial_agent_visibility_log_archive LIKE vicidial_agent_visibility_log;
-
-CREATE TABLE vicidial_peer_event_log_archive LIKE vicidial_peer_event_log;
-ALTER TABLE vicidial_peer_event_log_archive MODIFY peer_event_id INT(9) UNSIGNED NOT NULL;
-
-CREATE TABLE vicidial_inbound_caller_codes_archive LIKE vicidial_inbound_caller_codes;
-
 INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,load_leads,campaign_detail,ast_admin_access,modify_users,alter_agent_interface_options) values('6666','1234','Admin','9','ADMIN','1','1','1','1','1');
 INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,active) values('VDAD','donotedit','Outbound Auto Dial','1','ADMIN','N');
 INSERT INTO vicidial_users (user,pass,full_name,user_level,user_group,active) values('VDCL','donotedit','Inbound No Agent','1','ADMIN','N');
@@ -5008,12 +4634,9 @@ UPDATE vicidial_configuration set value='1766' where name='qc_database_version';
 
 INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('AGENT_CALLBACK_EMAIL ','Scheduled callback email alert settings','OTHER','---ALL---','; sending email address\r\nemail_from => vicidial@local.server\r\n\r\n; subject of the email\r\nemail_subject => Scheduled callback alert for --A--agent_name--B--\r\n\r\nemail_body_begin => \r\nThis is a reminder that you have a scheduled callback right now for the following lead:\r\n\r\nName: --A--first_name--B-- --A--last_name--B--\r\nPhone: --A--phone_number--B--\r\nAlt. phone: --A--alt_phone--B--\r\nEmail: --A--email--B--\r\nCB Comments: --A--callback_comments--B--\r\nLead Comments: --A--comments--B--\r\n\r\nPlease don\'t respond to this, fool.\r\n\r\nemail_body_end');
 INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('TIMEZONES_USA','USA Timezone List','TIMEZONE_LIST','---ALL---','USA,AST,N,Atlantic Time Zone\nUSA,EST,Y,Eastern Time Zone\nUSA,CST,Y,Central Time Zone\nUSA,MST,Y,Mountain Time Zone\nUSA,MST,N,Arizona Time Zone\nUSA,PST,Y,Pacific Time Zone\nUSA,AKST,Y,Alaska Time Zone\nUSA,HST,N,Hawaii Time Zone\n');
-INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('TIMEZONES_CANADA','Canadian Timezone List','TIMEZONE_LIST','---ALL---','CAN,NST,Y,Newfoundland Time Zone\nCAN,AST,Y,Atlantic Time Zone\nCAN,EST,Y,Eastern Time Zone\nCAN,CST,Y,Central Time Zone\nCAN,CST,N,Saskatchewan Time Zone\nCAN,MST,Y,Mountain Time Zone\nCAN,MST,N,Yukon Time Zone\nCAN,PST,Y,Pacific Time Zone\n');
+INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('TIMEZONES_CANADA','Canadian Timezone List','TIMEZONE_LIST','---ALL---','CAN,NST,Y,Newfoundland Time Zone\nCAN,AST,Y,Atlantic Time Zone\nCAN,EST,Y,Eastern Time Zone\nCAN,CST,Y,Central Time Zone\nCAN,CST,N,Saskatchewan Time Zone\nCAN,MST,Y,Mountain Time Zone\nCAN,PST,Y,Pacific Time Zone\n');
 INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('TIMEZONES_AUSTRALIA','Australian Timezone List','TIMEZONE_LIST','---ALL---','AUS,AEST,Y,Eastern Australia Time Zone\nAUS,AEST,N,Queensland Time Zone\nAUS,ACST,Y,Central Australia Time Zone\nAUS,ACST,N,Northern Territory Time Zone\nAUS,AWST,N,Western Australia Time Zone\n');
-INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('PHONE_DEFAULTS','Default phone settings for preloading','PHONE_DEFAULTS','---ALL---','# Below are all phone settings recognized under the PHONE_DEFAULTS \r\n# container type and the type of data each accepts.  Any setting that\r\n# uses a default value in the database has said value pre-set below\r\n\r\n# 10 char max\r\nvoicemail_id => \r\n \r\n# 15 char max\r\nserver_ip => \r\n\r\n# 100 char max\r\npass => \r\n\r\n# 10 char max\r\nstatus => \r\n\r\n# Y/N only\r\nactive => Y\r\n\r\n# 50 char max\r\nphone_type => \r\n\r\n# \'SIP\',\'Zap\',\'IAX2\' or \'EXTERNAL\'\r\nprotocol => SIP\r\n\r\n# positive or negatier 2-decimal floating point number\r\nlocal_gmt => -5.00\r\n\r\n# 20 char max\r\nvoicemail_dump_exten => 85026666666666\r\n\r\n# 20 char max\r\noutbound_cid => \r\n\r\n# 100 char max\r\nemail => \r\n\r\n# 15 char max\r\ntemplate_id => \r\n\r\n# text, conf_override can span multiple lines, see below\r\nconf_override => \r\n# type=friend\r\n# host=dynamic\r\n# canreinvite=no\r\n# context=default1\r\n\r\n# 50 char max\r\nphone_context => default\r\n\r\n# Unsigned - max value 65536\r\nphone_ring_timeout => 60\r\n\r\n# 20 char max\r\nconf_secret => test\r\n\r\n# Y/N only\r\ndelete_vm_after_email => N\r\n\r\n# Options - Y, N, or Y_API_LAUNCH\r\nis_webphone => N\r\n\r\n# Y/N only\r\nuse_external_server_ip => N\r\n\r\n# 100 char max\r\ncodecs_list => \r\n\r\n# 0/1 only\r\ncodecs_with_template => 0\r\n\r\n# Options - Y, N, TOGGLE, or TOGGLE_OFF\r\nwebphone_dialpad => Y\r\n\r\n# Y/N only\r\non_hook_agent => N\r\n\r\n# Y/N only\r\nwebphone_auto_answer => Y\r\n\r\n# 30 char max\r\nvoicemail_timezone => eastern\r\n\r\n# 255 char max\r\nvoicemail_options => \r\n\r\n# 20 char max\r\nuser_group => ---ALL---\r\n\r\n# 100 char max\r\nvoicemail_greeting => \r\n\r\n# 20 char max\r\nvoicemail_dump_exten_no_inst => 85026666666667\r\n\r\n# Y/N only\r\nvoicemail_instructions => Y\r\n\r\n# Y/N only\r\non_login_report => N\r\n\r\n# 40 char max\r\nunavail_dialplan_fwd_exten => \r\n\r\n# 100 char max\r\nunavail_dialplan_fwd_context => \r\n\r\n# text\r\nnva_call_url => \r\n\r\n# 40 char max\r\nnva_search_method => \r\n\r\n# 255 char max\r\nnva_error_filename => \r\n\r\n# Integer, any size\r\nnva_new_list_id => 995\r\n\r\n# 10 char max\r\nnva_new_phone_code => 1\r\n\r\n# 6 char max\r\nnva_new_status => NVAINS\r\n\r\n# Y/N only\r\nwebphone_dialbox => Y\r\n\r\n# Y/N only\r\nwebphone_mute => Y\r\n\r\n# Y/N only\r\nwebphone_volume => Y\r\n\r\n# Y/N only\r\nwebphone_debug => N\r\n\r\n# 20 char max\r\noutbound_alt_cid => \r\n\r\n# Y/N only\r\nconf_qualify => Y\r\n\r\n# 255 char max\r\nwebphone_layout => \r\n');
-INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('QC_STATUS_TEMPLATE','Sample QC Status Template','QC_TEMPLATE','---ALL---','# These types of containers are simply used for creating a list of \r\n# QC-enabled statuses to apply to campaigns, lists, and ingroups.\r\n# Simply put all the statuses that this template should allow in\r\n# a comma-delimited string, as below:\r\n\r\nSALE,DNC,NI');
-INSERT INTO vicidial_settings_containers(container_id,container_notes,container_type,user_group,container_entry) VALUES ('INTERNATIONAL_DNC_IMPORT','Process DNC lists of various countries from FTP site','PERL_CLI','---ALL---','# This setting container is used for the international DNC system. \r\n# The below two settings are mandatory for importing suppression lists\r\n# and tell the import process where to look for new files and where to\r\n# move them when handled.  These settings cannot have the same value. \r\n--file-dir=/root/ftp\r\n--file-destination=/root/ftp/DONE\r\n\r\n# Uncomment below and set the status to whatever custom disposition you \r\n# would like already-loaded leads to be set to when they dedupe against\r\n# a country\'s DNC list (default is \"DNCI\")\r\n# --dnc-status-override=BMNR\r\n\r\n# The below settings are optional for when files are stored on a remote\r\n# server.  It is strongly recommended these settings are not used and\r\n# that the processing scripts and files are stored locally on the same\r\n# server. \r\n# --ftp-host=localhost\r\n# --ftp-user=user\r\n# --ftp-pwd=pwd\r\n# --ftp-port=21\r\n# --ftp-passive=1\r\n'),('DNC_IMPORT_FORMATS','Import formats for DNC files','OTHER','---ALL---','# This setting container is used for storing file formats used when \r\n# loading DNC suppression lists into the dialer. \r\n#\r\n# import template => (delimited|fixed),delimiter,phone1(,phone2,phone3)\r\n#\r\n# For delimited files, the phone1 value should be the index value of\r\n# the field where the phone appears.  The first array index is 0 and\r\n# indexes continue through the natural numbers.\r\n\r\n# In delimited files, acceptable values for the \"delimiter\" field are:\r\n# - \"tab\", \"pipe\", \"comma\", \"quote-comma\"\r\nBASIC_DELIMITED_FORMAT => delimited,pipe,0\r\n\r\n# If the phone number is split into multiple fields (ex: area code in\r\n# one field, rest of the number in another), simply list additional \r\n# indices of the phone number fields separated by commas in the order \r\n# in which the data should be combined to make the complete phone \r\n# number \r\nDELIMITED_WITH_AC_AND_EXCHANGE_SPLIT => delimited,tab,0,1\r\n\r\n# For fixed-length files, the phone field values should be of the type:\r\n# - \"starting_position|length\"\r\nBASIC_FIXED_FORMAT => fixed,,0|10\r\n\r\n# (delimited|fixed) is not used for CSV/Excel files, so all that needs \r\n# providing for those is the index field value(s) of the phone number\r\nBASIC_CSV_OR_EXCEL_FORMAT => ,,0'),('DNC_CURRENT_BLOCKED_LISTS','Lists currently blocked due to pending DNC scrub','READ_ONLY','---ALL---','');
 
 UPDATE system_settings set vdc_agent_api_active='1';
 
-UPDATE system_settings SET db_schema_version='1641',db_schema_update_date=NOW(),reload_timestamp=NOW();
+UPDATE system_settings SET db_schema_version='1599',db_schema_update_date=NOW(),reload_timestamp=NOW();

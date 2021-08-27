@@ -45,8 +45,7 @@ services:
             - 3308:3306
         volumes:
             - ./mysql/data:/var/lib/mysql
-            - ./mysql/import/MySQL_AST_CREATE_tables.sql:/docker-entrypoint-initdb.d/MySQL_AST_CREATE_tables.sql
-            - ./mysql/import/first_server_install.sql:/docker-entrypoint-initdb.d/first_server_install.sql
+            - ./mysql/import:/docker-entrypoint-initdb.d
         healthcheck:
             test: if [ $$(ps -p 1 -o comm=) = "mysqld" ]; then exit 0; else exit 1; fi
             interval: 5s
