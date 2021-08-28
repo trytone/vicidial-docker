@@ -1,0 +1,61 @@
+# Stuff to tune for your hardware
+max_connections=512 # If you have a dedicated database that meets the above HW reqs, change this to 2000
+key_buffer_size = 4G # Increase to be approximately 60% of system RAM when you have more then 8GB in the system
+
+# In general most of the below settings don't need tuning
+log-error = /var/log/mysql/mysqld.log
+long_query_time=3
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/mysqld-slow.log
+log-slow-verbosity = query_plan,explain
+secure_file_priv = /var/lib/mysql-files # Only allow LOAD DATA INFILE from this directory as a security feature
+log_bin = /var/lib/mysql/mysql-bin
+binlog_format = mixed
+binlog_direct_non_transactional_updates=1 # By default, all slave replications are treated as transactions, even though MyISAM doesn't support it, so disable that behavior cause it makes slave replicationg REALLLLLLLLLY slow
+relay_log = /var/lib/mysql/mysql-relay-bin
+datadir	= /srv/mysql/data
+server-id = 1 # Master should be 1, and all slaves should have a unique ID number
+slave-skip-errors = 1032,1690,1062 # ViciDial doesn't always do clean inserts, so prevent duplicate inserts from bombing the replication basically
+slave_parallel_threads = 4 # Might need to increase this if slave replicating is slow, up to 40 or even 60 threads is not unheard of
+slave-parallel-mode = optimistic
+slave-parallel-max-queued = 2M
+skip-external-locking
+skip-name-resolve
+connect_timeout = 60
+max_allowed_packet = 16M
+table_open_cache = 4096
+table_definition_cache = 16384
+sort_buffer_size = 4M
+net_buffer_length = 8K
+read_buffer_size = 4M
+read_rnd_buffer_size = 16M
+myisam_sort_buffer_size = 128M
+query_cache_size = 0 # Yes, this will bottleneck your system if you have more then a few thousand QPS, so leave disabled! You've been warned :)
+expire_logs_days = 3 # Disabling or setting this to 0 will fill up your hard-drive eventually, 3 days is a good compromise for slaves with connectivity issues
+concurrent_insert = 2
+myisam_repair_threads = 4
+myisam_recover_option = DEFAULT
+tmpdir = /tmp/
+thread_cache_size = 100
+join_buffer_size = 1M
+myisam_use_mmap = 1
+open_files_limit = 24576
+max_heap_table_size=512M
+tmp_table_size=32M
+key_cache_segments=64
+sql_mode=NO_ENGINE_SUBSTITUTION
+
+innodb_buffer_pool_size = 128M
+innodb_file_format = Barracuda # Deprecated in future releases as this is the only supported format, eventually
+innodb_file_per_table = ON
+innodb_flush_method=O_DIRECT
+innodb_flush_log_at_trx_commit=2
+innodb_log_buffer_size=8M
+
+[mysqld_multi]
+mysqld     = /usr/bin/mysqld_safe
+mysqladmin = /usr/bin/mysqladmin
+log        = /var/log/mysqld_multi.log
+
+!includedir /etc/my.cnf.d
+

@@ -11,7 +11,7 @@ EXPOSE 80
 
 # Install depedencies
 RUN apk update
-RUN apk add --no-cache wget subversion tzdata perl perl-dbi perl-dbd-mysql apache2
+RUN apk add --no-cache wget subversion tzdata perl perl-dbi perl-dbd-mysql apache2 openntpd screen
 RUN apk add --no-cache php5 php5-apache2 php5-mysqli libressl2.7-libcrypto --repository=http://dl-cdn.alpinelinux.org/alpine/v3.8/community --repository=http://dl-cdn.alpinelinux.org/alpine/v3.8/main
 
 # Change timezone
@@ -35,6 +35,9 @@ RUN perl install.pl \
 --web-only
 
 RUN echo '<META HTTP-EQUIV=REFRESH CONTENT="1; URL=/vicidial/welcome.php">Please Hold while I redirect you!' > /var/www/localhost/htdocs/index.html
+
+# NTP Server
+RUN echo 'servers pool.ntp.org' > /etc/ntpd.conf
 
 # Copy configuration files
 COPY ./httpd.conf /etc/apache2

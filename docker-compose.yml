@@ -10,8 +10,13 @@ services:
                 VICIDIAL_DB_PASSWORD: root
                 VICIDIAL_DB_CUSTOM_USER: cron
                 VICIDIAL_DB_CUSTOM_PASSWORD: 1234
+        cap_add:
+            - SYS_TIME
+            - SYS_NICE
         container_name: vicidial
         restart: always
+        volumes:
+            - ./mysql/logs/vicidial_mysqli_errors.txt:/var/www/localhost/htdocs/agc/vicidial_mysqli_errors.txt
         ports:
             - 80:80
         links:
@@ -33,7 +38,8 @@ services:
         ports:
             - 8080:80           
     mysql:
-        image: mariadb
+        build: 
+            context: ./mysql
         container_name: mysql
         restart: always
         environment:
@@ -41,8 +47,9 @@ services:
             - MYSQL_ROOT_PASSWORD=root
             - MYSQL_USER=cron
             - MYSQL_PASSWORD=1234
+            - TZ=Europe/Paris
         ports:
-            - 3308:3306
+            - 3306:3306
         volumes:
             - ./mysql/data:/var/lib/mysql
             - ./mysql/import:/docker-entrypoint-initdb.d
