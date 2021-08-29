@@ -8,9 +8,9 @@ services:
                 DB_HOST: mysql
                 DB_NAME: asterisk
                 DB_USER: root
-                DB_PASSWORD: root
+                DB_PASS: root
                 DB_CUSTOM_USER: cron
-                DB_CUSTOM_PASSWORD: 1234
+                DB_CUSTOM_PASS: 1234
                 FTP_HOST: 127.0.0.1
                 FTP_USER: root
                 FTP_PASS: root
@@ -23,6 +23,7 @@ services:
             - 8.8.8.8
         volumes:
             - ./asterisk/config:/etc/asterisk
+            - ./asterisk/cron:/etc/crontabs
         ports:
             - "5060:5060/udp"
             - "5060:5060/tcp"

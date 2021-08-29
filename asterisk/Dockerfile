@@ -1,8 +1,20 @@
 FROM alpine:latest
 
+ARG ASTERISK_SERVER_IP
+ARG DB_HOST
+ARG DB_NAME
+ARG DB_USER
+ARG DB_PASS
+ARG DB_CUSTOM_USER
+ARG DB_CUSTOM_PASS
+ARG FTP_HOST
+ARG FTP_USER
+ARG FTP_PASS
+
 EXPOSE 5060/udp 5060/tcp
 
-RUN apk update && apk add gcc g++ make git patch perl perl-dev perl-dbi perl-dbd-mysql curl wget sox lame screen asterisk subversion
+RUN apk update
+RUN apk add --no-cache gcc g++ make git patch perl perl-dev perl-dbi perl-dbd-mysql perl-mail-sendmail curl wget sox lame screen asterisk subversion procps
 
 RUN curl -L http://xrl.us/cpanm > /bin/cpanm && chmod +x /bin/cpanm
 
@@ -32,9 +44,14 @@ File::Temp \
 Text::CSV_XS \
 Spreadsheet::Read
 
-#RUN cpanm DBI
-#RUN cpan -f -i DBD::mysql
-#RUN cpanm Mail::Sendmail
+WORKDIR /usr/local
+RUN wget https://pilotfiber.dl.sourceforge.net/project/vicidial/asterisk-perl-0.08.tar.gz
+RUN tar -xf asterisk-perl-0.08.tar.gz
+WORKDIR /usr/local/asterisk-perl-0.08
+RUN perl Makefile.PL
+RUN make all
+RUN make install
+
 #RUN cpanm Jcode
 #RUN cpanm Proc::ProcessTable
 #RUN cpanm Spreadsheet::ReadSXC
@@ -46,14 +63,6 @@ RUN svn checkout svn://svn.eflo.net:3690/agc_2-X/trunk
 WORKDIR /usr/src/astguiclient/trunk
 RUN svn up -r 3261
 RUN perl install.pl \
---conffile=/etc/astguiclient.conf \
---home=/usr/share/astguiclient \
---logs=/var/log/astguiclient \
---agi=/var/lib/asterisk/agi-bin \
---web=/var/www/localhost/htdocs \
---sounds=/var/lib/asterisk/sounds \
---monitor=/var/spool/asterisk/monitor \
---DONEmonitor=/var/spool/asterisk/monitorDONE \
 --server_ip=$ASTERISK_SERVER_IP \
 --DB_server=$DB_HOST \
 --DB_database=$DB_NAME \
@@ -61,33 +70,20 @@ RUN perl install.pl \
 --DB_pass=$DB_PASS \
 --DB_custom_user=$DB_CUSTOM_USER \
 --DB_custom_pass=$DB_CUSTOM_PASS \
---DB_port=3306 \
---active_keepalives=123456 \
---asterisk_version=13 \
 --FTP_host=$FTP_HOST \
 --FTP_user=$FTP_USER \
 --FTP_pass=$FTP_PASS \
---FTP_port=21 \
---FTP_dir=RECORDINGS \
 --REPORT_host=$FTP_HOST \
 --REPORT_user=$FTP_USER \
 --REPORT_pass=$FTP_PASS \
---REPORT_port=21 \
---REPORT_dir=REPORTS \
---HTTP_path=http://$FTP_HOST \
---fastagi_log_min_servers=3 \
---fastagi_log_max_servers=16 \
---fastagi_log_min_spare_servers=2 \
---fastagi_log_max_spare_servers=8 \
---fastagi_log_max_requests=1000 \
---fastagi_log_checkfordead=30 \
---fastagi_log_checkforwait=60 \
 --no-prompt \
 --without-web
 
 RUN mkdir -p /var/lib/asterisk/mohmp3
 RUN mkdir -p /var/lib/asterisk/quiet-mp3
 RUN mkdir -p /var/lib/asterisk/default
+
+RUN crond
 
 CMD ["-v", "-f"]
 ENTRYPOINT ["/usr/sbin/asterisk"]

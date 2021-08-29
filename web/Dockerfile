@@ -40,7 +40,7 @@ RUN echo '<META HTTP-EQUIV=REFRESH CONTENT="1; URL=/vicidial/welcome.php">Please
 RUN echo 'servers pool.ntp.org' > /etc/ntpd.conf
 
 # Copy configuration files
-COPY ./httpd.conf /etc/apache2
+COPY ./config/httpd.conf /etc/apache2
 
 # Init apache2 deamon
 CMD ["-D","FOREGROUND"]
