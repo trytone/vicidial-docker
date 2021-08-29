@@ -1,7 +1,37 @@
 version: '3'
 services:
+    asterisk:
+        build:
+            context: ./asterisk
+            args:
+                ASTERISK_SERVER_IP: 192.168.0.210
+                DB_HOST: mysql
+                DB_NAME: asterisk
+                DB_USER: root
+                DB_PASSWORD: root
+                DB_CUSTOM_USER: cron
+                DB_CUSTOM_PASSWORD: 1234
+                FTP_HOST: 127.0.0.1
+                FTP_USER: root
+                FTP_PASS: root
+        cap_add:
+            - SYS_TIME
+            - SYS_NICE
+        container_name: asterisk
+        restart: always
+        dns:
+            - 8.8.8.8
+        volumes:
+            - ./asterisk/config:/etc/asterisk
+        ports:
+            - "5060:5060/udp"
+            - "5060:5060/tcp"
+        links:
+            - mysql
+        depends_on:
+            - mysql
     web:
-        build: 
+        build:
             context: ./web
             args:
                 VICIDIAL_DB_HOST: mysql
@@ -36,9 +66,9 @@ services:
             - PMA_USER=root
             - PMA_PASSWORD=root
         ports:
-            - 8080:80           
+            - 8080:80
     mysql:
-        build: 
+        build:
             context: ./mysql
         container_name: mysql
         restart: always
@@ -53,7 +83,3 @@ services:
         volumes:
             - ./mysql/data:/var/lib/mysql
             - ./mysql/import:/docker-entrypoint-initdb.d
-        healthcheck:
-            test: if [ $$(ps -p 1 -o comm=) = "mysqld" ]; then exit 0; else exit 1; fi
-            interval: 5s
-            retries: 400
