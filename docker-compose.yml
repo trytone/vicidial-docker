@@ -3,6 +3,7 @@ services:
     asterisk:
         build:
             context: ./asterisk
+            network: host
             args:
                 ASTERISK_SERVER_IP: 192.168.0.210
                 DB_HOST: mysql
@@ -24,6 +25,9 @@ services:
         volumes:
             - ./asterisk/config:/etc/asterisk
             - ./asterisk/cron:/etc/crontabs
+            - ./asterisk/assets/mohmp3:/var/lib/asterisk/mohmp3
+            - ./asterisk/assets/quiet-mp3:/var/lib/asterisk/quiet-mp3
+            - ./asterisk/assets/sounds:/var/lib/asterisk/sounds
         ports:
             - "5060:5060/udp"
             - "5060:5060/tcp"
@@ -54,20 +58,6 @@ services:
             - mysql
         depends_on:
             - mysql
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin:latest
-        container_name: phpmyadmin
-        restart: always
-        links:
-            - mysql
-        depends_on:
-            - mysql
-        environment:
-            - PMA_HOST=mysql
-            - PMA_USER=root
-            - PMA_PASSWORD=root
-        ports:
-            - 8080:80
     mysql:
         build:
             context: ./mysql
@@ -84,3 +74,17 @@ services:
         volumes:
             - ./mysql/data:/var/lib/mysql
             - ./mysql/import:/docker-entrypoint-initdb.d
+#    phpmyadmin:
+#        image: phpmyadmin/phpmyadmin:latest
+#        container_name: phpmyadmin
+#        restart: always
+#        links:
+#            - mysql
+#        depends_on:
+#            - mysql
+#        environment:
+#            - PMA_HOST=mysql
+#            - PMA_USER=root
+#            - PMA_PASSWORD=root
+#        ports:
+#            - 8080:80
