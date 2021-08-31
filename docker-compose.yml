@@ -3,7 +3,6 @@ services:
     asterisk:
         build:
             context: ./asterisk
-            network: host
             args:
                 ASTERISK_SERVER_IP: 192.168.0.210
                 DB_HOST: mysql
