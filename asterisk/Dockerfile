@@ -87,6 +87,6 @@ RUN mkdir -p /var/lib/asterisk/default
 RUN apk add --no-cache dahdi-linux asterisk-dahdi dahdi-linux-grsec
 
 CMD ["/bin/sh", "-c", "crond \
-&& /usr/share/astguiclient/ADMIN_update_server_ip.pl --old-server_ip=10.10.10.15 --server_ip=$ASTERISK_SERVER_IP \
+&& /usr/share/astguiclient/ADMIN_update_server_ip.pl --old-server_ip=10.10.10.15 --server_ip=$ASTERISK_SERVER_IP --auto \
 && /usr/share/astguiclient/start_asterisk_boot.pl \
 && /usr/sbin/asterisk -v -f"]
