@@ -1,16 +1,5 @@
 FROM alpine:3.5
 
-ARG ASTERISK_SERVER_IP
-ARG DB_HOST
-ARG DB_NAME
-ARG DB_USER
-ARG DB_PASS
-ARG DB_CUSTOM_USER
-ARG DB_CUSTOM_PASS
-ARG FTP_HOST
-ARG FTP_USER
-ARG FTP_PASS
-
 EXPOSE 5060/udp 5060/tcp
 
 RUN apk update
@@ -63,6 +52,18 @@ WORKDIR /usr/src/astguiclient
 RUN svn checkout svn://svn.eflo.net:3690/agc_2-X/trunk
 WORKDIR /usr/src/astguiclient/trunk
 RUN svn up -r 3261
+
+ARG ASTERISK_SERVER_IP
+ARG DB_HOST
+ARG DB_NAME
+ARG DB_USER
+ARG DB_PASS
+ARG DB_CUSTOM_USER
+ARG DB_CUSTOM_PASS
+ARG FTP_HOST
+ARG FTP_USER
+ARG FTP_PASS
+
 RUN perl install.pl \
 --server_ip=$ASTERISK_SERVER_IP \
 --DB_server=$DB_HOST \
@@ -85,6 +86,8 @@ RUN mkdir -p /var/lib/asterisk/quiet-mp3
 RUN mkdir -p /var/lib/asterisk/default
 
 RUN apk add --no-cache dahdi-linux asterisk-dahdi dahdi-linux-grsec
+
+ARG ASTERISK_SERVER_IP
 
 CMD ["/bin/sh", "-c", "crond \
 && /usr/share/astguiclient/ADMIN_update_server_ip.pl --old-server_ip=10.10.10.15 --server_ip=$ASTERISK_SERVER_IP --auto \
