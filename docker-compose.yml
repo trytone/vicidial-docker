@@ -34,7 +34,8 @@ services:
         links:
             - mysql
         depends_on:
-            - mysql
+            mysql:
+                condition: service_healthy
     web:
         build:
             context: ./web
@@ -57,7 +58,8 @@ services:
         links:
             - mysql
         depends_on:
-            - mysql
+            mysql:
+                condition: service_healthy
     mysql:
         build:
             context: ./mysql
@@ -74,6 +76,10 @@ services:
         volumes:
             - ./mysql/data:/var/lib/mysql
             - ./mysql/import:/docker-entrypoint-initdb.d
+        healthcheck:
+            test: if [ $$(ps -p 1 -o comm=) = "mysqld" ]; then exit 0; else exit 1; fi
+            interval: 5s
+            retries: 400
     phpmyadmin:
         image: phpmyadmin/phpmyadmin:latest
         container_name: phpmyadmin
@@ -81,7 +87,8 @@ services:
         links:
             - mysql
         depends_on:
-            - mysql
+            mysql:
+                condition: service_healthy
         environment:
             - PMA_HOST=mysql
             - PMA_USER=root
