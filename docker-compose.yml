@@ -18,6 +18,8 @@ services:
         cap_add:
             - SYS_TIME
             - SYS_NICE
+            - ALL
+        privileged: true
         container_name: asterisk
         restart: always
         dns:
@@ -74,17 +76,17 @@ services:
         volumes:
             - ./mysql/data:/var/lib/mysql
             - ./mysql/import:/docker-entrypoint-initdb.d
-#    phpmyadmin:
-#        image: phpmyadmin/phpmyadmin:latest
-#        container_name: phpmyadmin
-#        restart: always
-#        links:
-#            - mysql
-#        depends_on:
-#            - mysql
-#        environment:
-#            - PMA_HOST=mysql
-#            - PMA_USER=root
-#            - PMA_PASSWORD=root
-#        ports:
-#            - 8080:80
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        container_name: phpmyadmin
+        restart: always
+        links:
+            - mysql
+        depends_on:
+            - mysql
+        environment:
+            - PMA_HOST=mysql
+            - PMA_USER=root
+            - PMA_PASSWORD=root
+        ports:
+            - 8080:80

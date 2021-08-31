@@ -83,7 +83,6 @@ RUN mkdir -p /var/lib/asterisk/mohmp3
 RUN mkdir -p /var/lib/asterisk/quiet-mp3
 RUN mkdir -p /var/lib/asterisk/default
 
-RUN apk add --no-cache dahdi-linux asterisk-dahdi alpine-sdk linux-headers
-RUN echo 'dahdi' >> /etc/modules-load.d/dahdi.conf
+RUN apk add --no-cache dahdi-linux asterisk-dahdi dahdi-linux-grsec dahdi-linux-lts --repository=http://dl-cdn.alpinelinux.org/alpine/v3.5/community --repository=http://dl-cdn.alpinelinux.org/alpine/v3.5/main
 
 CMD ["/bin/sh", "-c", "crond && /usr/share/astguiclient/start_asterisk_boot.pl && /usr/sbin/asterisk -v -f"]
