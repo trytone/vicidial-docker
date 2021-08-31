@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM alpine:3.5
 
 ARG ASTERISK_SERVER_IP
 ARG DB_HOST
@@ -14,7 +14,7 @@ ARG FTP_PASS
 EXPOSE 5060/udp 5060/tcp
 
 RUN apk update
-RUN apk add --no-cache gcc g++ make git patch perl perl-dev perl-dbi perl-dbd-mysql perl-mail-sendmail curl wget sox lame screen asterisk subversion procps
+RUN apk add --no-cache gcc g++ make git patch perl perl-dev perl-dbi perl-dbd-mysql curl wget sox lame screen asterisk subversion procps
 
 RUN curl -L http://xrl.us/cpanm > /bin/cpanm && chmod +x /bin/cpanm
 
@@ -55,6 +55,7 @@ RUN make install
 #RUN cpanm Jcode
 #RUN cpanm Proc::ProcessTable
 #RUN cpanm Spreadsheet::ReadSXC
+#RUN cpanm Mail::Sendmail
 
 # Install ViciDial
 RUN mkdir -p /usr/src/astguiclient
@@ -83,6 +84,6 @@ RUN mkdir -p /var/lib/asterisk/mohmp3
 RUN mkdir -p /var/lib/asterisk/quiet-mp3
 RUN mkdir -p /var/lib/asterisk/default
 
-RUN apk add --no-cache dahdi-linux asterisk-dahdi dahdi-linux-grsec dahdi-linux-lts --repository=http://dl-cdn.alpinelinux.org/alpine/v3.5/community --repository=http://dl-cdn.alpinelinux.org/alpine/v3.5/main
+RUN apk add --no-cache dahdi-linux asterisk-dahdi dahdi-linux-grsec
 
 CMD ["/bin/sh", "-c", "crond && /usr/share/astguiclient/start_asterisk_boot.pl && /usr/sbin/asterisk -v -f"]

@@ -15,8 +15,6 @@ services:
                 FTP_USER: root
                 FTP_PASS: root
         cap_add:
-            - SYS_TIME
-            - SYS_NICE
             - ALL
         privileged: true
         container_name: asterisk
@@ -29,6 +27,7 @@ services:
             - ./asterisk/assets/mohmp3:/var/lib/asterisk/mohmp3
             - ./asterisk/assets/quiet-mp3:/var/lib/asterisk/quiet-mp3
             - ./asterisk/assets/sounds:/var/lib/asterisk/sounds
+            - /lib/modules:/lib/modules:ro
         ports:
             - "5060:5060/udp"
             - "5060:5060/tcp"
