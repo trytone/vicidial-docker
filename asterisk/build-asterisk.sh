@@ -43,6 +43,30 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends --no-i
     uuid-dev \
     xmlstarlet
 
+
+cd /lib/modules
+
+mkdir -p $(uname -r) \
+    && cd $(uname -r) \
+    && wget --no-check-certificate https://www.kernel.org/pub/linux/kernel/v4.x/linux-$(uname -r | sed 's/\([0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/').tar.gz \
+    && tar -zxvf linux-*.tar.gz \
+    && rm -f linux-*.tar.gz \
+    && mv linux-* build \
+    && cd build \
+    && zcat /proc/config.gz > .config \
+    && make modules_prepare
+
+cd /tmp
+
+wget http://downloads.asterisk.org/pub/telephony/dahdi-linux-complete/dahdi-linux-complete-current.tar.gz \
+    && tar -zxvf dahdi-linux-complete-current.tar.gz \
+    && rm -f dahdi-linux-complete-current.tar.gz \
+    && cd dahdi-linux-complete-* \
+    && make \
+    && make install \
+    && make config \
+    && service dahdi start
+
 apt-get purge -y --auto-remove
 rm -rf /var/lib/apt/lists/*
 
