@@ -5,7 +5,7 @@ EXPOSE 5060/udp 5060/tcp
 RUN apk update
 RUN apk add --no-cache gcc g++ make git patch perl perl-dev perl-dbi perl-dbd-mysql curl wget sox lame screen asterisk subversion procps
 
-RUN curl -L --insecure http://xrl.us/cpanm > /bin/cpanm && chmod +x /bin/cpanm
+RUN curl -Lk http://xrl.us/cpanm > /bin/cpanm && chmod +x /bin/cpanm
 
 RUN cpanm \
 MD5 \
@@ -34,7 +34,7 @@ Text::CSV_XS \
 Spreadsheet::Read
 
 WORKDIR /usr/local
-RUN wget https://pilotfiber.dl.sourceforge.net/project/vicidial/asterisk-perl-0.08.tar.gz
+RUN curl -LOk https://pilotfiber.dl.sourceforge.net/project/vicidial/asterisk-perl-0.08.tar.gz
 RUN tar -xf asterisk-perl-0.08.tar.gz
 WORKDIR /usr/local/asterisk-perl-0.08
 RUN perl Makefile.PL
