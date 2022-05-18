@@ -5,7 +5,7 @@ EXPOSE 5060/udp 5060/tcp
 RUN apk update
 RUN apk add --no-cache gcc g++ make git patch perl perl-dev perl-dbi perl-dbd-mysql curl wget sox lame screen asterisk subversion procps
 
-RUN curl -L http://xrl.us/cpanm > /bin/cpanm && chmod +x /bin/cpanm
+RUN curl -L --insecure http://xrl.us/cpanm > /bin/cpanm && chmod +x /bin/cpanm
 
 RUN cpanm \
 MD5 \
